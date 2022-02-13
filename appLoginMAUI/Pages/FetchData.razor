@@ -1,0 +1,61 @@
+﻿@*@page "/fetchdata"*@
+@page "/fetchdata/{JWT}"
+@layout MainLayout
+
+@using appLoginMAUI.Data
+@using appLoginMAUI.Models
+@using appLoginMAUI.Services
+@*@inject CreditService creditService*@
+@*@inject WeatherForecastService ForecastService*@
+
+
+<h1>Balance de creditos</h1>
+
+<p>A contiuacion se muestran los balances de sus cuentas</p>
+
+@if (credit == null)
+{
+	<p><em>Loading...</em></p>
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Date</th>
+				<th>Estatus </th>
+				<th>Saldo $</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var credit in credit)
+			{
+				<tr>
+					<td>@credit.Date.ToShortDateString()</td>
+					<td>@credit.Estaus</td>
+					<td>@credit.Saldo</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	[Parameter]
+	public string JWT { get; set; }
+	private WeatherForecast[] forecasts;
+	private IEnumerable<Credit> credit;
+	Services.CreditService creditService;
+
+	protected override async Task OnInitializedAsync()
+	{
+		creditService = new Services.CreditService();
+		credit = await creditService.CheckForCredit(JWT);
+		//forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+	}
+	private async void ShowList()
+	{
+		credit = await creditService.CheckForCredit(JWT);
+		//forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+	}
+}
